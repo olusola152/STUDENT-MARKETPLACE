@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: marketplace
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 2 --threads 4 --timeout 60 --bind 0.0.0.0:$PORT
+    healthCheckPath: /healthz
+    envVars:
+      - key: DATABASE_URL
+        sync: false          # paste the Supabase session pooler URI
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SECURE_COOKIES
+        value: "true"
+      - key: PYTHON_VERSION
+        value: "3.12.4"
