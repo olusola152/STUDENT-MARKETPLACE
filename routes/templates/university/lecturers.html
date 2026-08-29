@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Lecturers{% endblock %}
+{% block content %}
+<section class="page-head page-head--split">
+  <div><p class="record-label">{{ uni.name }}</p><h1 class="display">Lecturers</h1></div>
+  <a class="btn" href="{{ url_for('university.passcodes') }}">Issue codes</a>
+</section>
+{% if lecturers %}
+<table class="ledger">
+  <thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Expertise</th><th>Placements</th><th>Status</th></tr></thead>
+  <tbody>
+    {% for l in lecturers %}
+    <tr>
+      <td>{{ l.fullname }}</td><td class="mono">{{ l.email }}</td>
+      <td>{{ l.department or '—' }}</td><td>{{ l.expertise or '—' }}</td>
+      <td class="mono">{{ l.placements }}</td>
+      <td><span class="status status--{{ l.status }}">{{ l.status }}</span></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">No lecturers registered yet. Issue passcodes so they can join.</p>
+{% endif %}
+{% endblock %}

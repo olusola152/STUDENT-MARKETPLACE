@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Placements{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">{{ uni.name }}</p>
+  <h1 class="display">Placements</h1>
+  <p class="lede">Every student your lecturers have placed, and how far the work has progressed.</p>
+</section>
+{% if placements %}
+<table class="ledger">
+  <thead><tr><th>Student</th><th>Project</th><th>Company</th><th>Supervisor</th><th>Progress</th><th>Deadline</th><th>Status</th></tr></thead>
+  <tbody>
+    {% for p in placements %}
+    <tr>
+      <td>{{ p.student_name }}</td><td>{{ p.title }}</td><td>{{ p.company_name }}</td>
+      <td>{{ p.lecturer_name }}</td><td class="mono">{{ p.done }}/{{ p.total }}</td>
+      <td class="mono">{{ p.deadline.strftime('%d %b %Y') }}</td>
+      <td><span class="status status--{{ p.status }}">{{ p.status }}</span></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">No placements yet.</p>
+{% endif %}
+{% endblock %}

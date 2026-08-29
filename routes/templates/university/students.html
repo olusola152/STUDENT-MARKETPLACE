@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">{{ uni.name }}</p>
+  <h1 class="display">Students</h1>
+</section>
+{% if students %}
+<table class="ledger">
+  <thead><tr><th>Name</th><th>Course</th><th>Level</th><th>Matric</th><th>GitHub</th><th>Placements</th><th>Status</th></tr></thead>
+  <tbody>
+    {% for s in students %}
+    <tr>
+      <td>{{ s.fullname }}</td><td>{{ s.field_name or '—' }}</td>
+      <td class="mono">{{ s.level or '—' }}</td><td class="mono">{{ s.matric_no or '—' }}</td>
+      <td class="mono">{{ s.github_url or '—' }}</td><td class="mono">{{ s.placements }}</td>
+      <td><span class="status status--{{ s.status }}">{{ s.status }}</span></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">No students have registered under your institution yet.</p>
+{% endif %}
+{% endblock %}
