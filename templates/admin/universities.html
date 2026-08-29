@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Universities — Admin{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">Platform</p>
+  <h1 class="display">Universities</h1>
+  <p class="lede">Every institution on the platform, whatever its subscription state.</p>
+</section>
+
+{% if universities %}
+<table class="ledger">
+  <thead><tr>
+    <th>Institution</th><th>Account holder</th><th>Lecturers</th><th>Students</th>
+    <th>Open codes</th><th>Placements</th><th>Until</th><th>Subscription</th><th></th>
+  </tr></thead>
+  <tbody>
+    {% for u in universities %}
+    <tr>
+      <td>
+        <strong>{{ u.name }}</strong>
+        {% if u.city %}<br><span class="mono">{{ u.city }}</span>{% endif %}
+        <br><span class="mono">/join/{{ u.slug }}</span>
+      </td>
+      <td>
+        {{ u.admin_name or '—' }}<br>
+        <span class="mono">{{ u.admin_email or u.contact_email or '—' }}</span>
+        {% if u.admin_status == 'blocked' %}<br><span class="status status--blocked">blocked</span>{% endif %}
+      </td>
+      <td class="mono">{{ u.lecturers }}</td>
+      <td class="mono">{{ u.students }}</td>
+      <td class="mono">{{ u.open_codes }}</td>
+      <td class="mono">{{ u.placements }}</td>
+      <td class="mono">{{ u.subscribed_until.strftime('%d %b %Y') if u.subscribed_until else '—' }}</td>
+      <td><span class="status status--{{ u.subscription_status }}">{{ u.subscription_status }}</span></td>
+      <td>
+        <form method="post" action="{{ url_for('admin.set_subscription', kind='university', record_id=u.id) }}" class="inline-form">
+          <select name="status">
+            {% for s in ['active','pending','expired','suspended'] %}
+            <option value="{{ s }}" {% if u.subscription_status == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+          <input type="number" name="months" min="1" max="36" placeholder="12" class="mini-input">
+          <button class="link-btn" type="submit">Apply</button>
+        </form>
+        {% if u.admin_id and u.admin_status == 'active' %}
+        <form method="post" action="{{ url_for('admin.block_user', user_id=u.admin_id) }}" class="inline-form">
+          <button class="link-btn" type="submit">Block account</button>
+        </form>
+        {% elif u.admin_id %}
+        <form method="post" action="{{ url_for('admin.unblock_user', user_id=u.admin_id) }}">
+          <button class="link-btn" type="submit">Unblock</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">No universities have registered yet.</p>
+{% endif %}
+{% endblock %}

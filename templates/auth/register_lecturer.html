@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Lecturer registration — Marketplace{% endblock %}
+{% block body_class %}gate{% endblock %}
+{% block main_class %}gate-shell{% endblock %}
+
+{% block content %}
+<section class="gate-pitch">
+  <span class="mark-seal mark-seal--lg" aria-hidden="true"></span>
+  <h1 class="display">Lecturer<br>registration.</h1>
+  <p class="lede">Your university issues you a one-time passcode. It ties your account to your institution and works once.</p>
+  <p class="lede" style="margin-top:1rem">The areas of expertise you pick decide which company briefs you can see and take on.</p>
+</section>
+
+<section class="card">
+  <p class="record-label">Passcode required</p>
+  <h2 class="card-title">Create your account</h2>
+
+  <form method="post" novalidate>
+    <label class="field">
+      <span>One-time passcode</span>
+      <input type="text" name="passcode" value="{{ form.passcode or '' }}" required
+             placeholder="XK4T-9PQR-2MBD" class="mono-input" autocomplete="off">
+    </label>
+    <label class="field">
+      <span>Full name</span>
+      <input type="text" name="fullname" value="{{ form.fullname or '' }}" required>
+    </label>
+    <label class="field">
+      <span>Email</span>
+      <input type="email" name="email" value="{{ form.email or '' }}" required>
+    </label>
+    <div class="field-row">
+      <label class="field">
+        <span>Department</span>
+        <input type="text" name="department" value="{{ form.department or '' }}">
+      </label>
+      <label class="field">
+        <span>Staff number</span>
+        <input type="text" name="staff_no" value="{{ form.staff_no or '' }}">
+      </label>
+    </div>
+
+    <fieldset class="fieldset">
+      <legend>Areas of expertise</legend>
+      <div class="skill-grid">
+        {% for f in fields %}
+        <label class="skill">
+          <input type="checkbox" name="fields" value="{{ f.id }}">
+          <span>{{ f.name }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <div class="field-row">
+      <label class="field">
+        <span>Password</span>
+        <input type="password" name="password" required minlength="8">
+      </label>
+      <label class="field">
+        <span>Repeat password</span>
+        <input type="password" name="confirm" required minlength="8">
+      </label>
+    </div>
+
+    <button class="btn btn--full" type="submit">Create account</button>
+  </form>
+  <p class="card-foot">Already registered? <a href="{{ url_for('auth.login') }}">Sign in</a></p>
+</section>
+{% endblock %}

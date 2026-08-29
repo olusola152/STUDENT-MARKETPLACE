@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Placements — Admin{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">Platform</p>
+  <h1 class="display">Placements</h1>
+  <p class="lede">Every student placed on every project, across all universities.</p>
+</section>
+
+{% if placements %}
+<table class="ledger">
+  <thead><tr>
+    <th>Student</th><th>University</th><th>Supervisor</th><th>Project</th>
+    <th>Company</th><th>Progress</th><th>Deadline</th><th>Status</th>
+  </tr></thead>
+  <tbody>
+    {% for p in placements %}
+    <tr {% if p.overdue %}class="row--warn"{% endif %}>
+      <td>{{ p.student_name }}</td>
+      <td>{{ p.university_name or '—' }}</td>
+      <td>{{ p.lecturer_name }}</td>
+      <td>{{ p.title }}</td>
+      <td>{{ p.company_name }}</td>
+      <td class="mono">{{ p.done }}/{{ p.total }}{% if p.overdue %}<br>{{ p.overdue }} overdue{% endif %}</td>
+      <td class="mono">{{ p.deadline.strftime('%d %b %Y') }}</td>
+      <td><span class="status status--{{ p.status }}">{{ p.status }}</span></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">No students have been placed yet.</p>
+{% endif %}
+{% endblock %}

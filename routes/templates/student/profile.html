@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Your profile{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">Student profile</p>
+  <h1 class="display">{{ g.user.fullname }}</h1>
+  <p class="lede">{{ profile.university_name or '' }}{% if profile.field_name %} · {{ profile.field_name }}{% endif %}{% if profile.level %} · {{ profile.level }} level{% endif %}</p>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Your details</h2>
+  <form method="post" novalidate>
+    <div class="field-row">
+      <label class="field">
+        <span>Department</span>
+        <input type="text" name="department" value="{{ profile.department or '' }}">
+      </label>
+      <label class="field">
+        <span>Level</span>
+        <input type="text" name="level" value="{{ profile.level or '' }}">
+      </label>
+    </div>
+    <label class="field">
+      <span>GitHub profile</span>
+      <input type="url" name="github_url" value="{{ profile.github_url or '' }}" placeholder="https://github.com/yourname">
+    </label>
+    <label class="field">
+      <span>About you</span>
+      <textarea name="bio" rows="4">{{ profile.bio or '' }}</textarea>
+    </label>
+    <label class="field field--narrow">
+      <span>Phone</span>
+      <input type="tel" name="phone" value="{{ profile.phone or '' }}">
+    </label>
+    <label class="skill" style="margin-bottom:1rem">
+      <input type="checkbox" name="available" {% if profile.available %}checked{% endif %}>
+      <span>Available for placement — lecturers see this when choosing students</span>
+    </label>
+    <button class="btn" type="submit">Save profile</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Verified work</h2>
+  {% if work_history %}
+  <table class="ledger">
+    <thead><tr><th>Project</th><th>Company</th><th>Skills</th><th>Repository</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for w in work_history %}
+      <tr>
+        <td>{{ w.title }}</td>
+        <td>{{ w.company_name }}</td>
+        <td>{{ w.skill_list or '—' }}</td>
+        <td class="mono">{{ w.repo_url or '—' }}</td>
+        <td><span class="status status--{{ w.status }}">{{ w.status }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">No placements yet. Once a lecturer places you on a project it appears here with the repository link.</p>
+  {% endif %}
+</section>
+
+{% if certificates %}
+<section class="panel">
+  <h2 class="panel-title">Certificates</h2>
+  <table class="ledger">
+    <thead><tr><th>Project</th><th>Company</th><th>Number</th><th>Issued</th></tr></thead>
+    <tbody>
+      {% for c in certificates %}
+      <tr><td>{{ c.title }}</td><td>{{ c.company_name }}</td><td class="mono">{{ c.certificate_number }}</td>
+      <td class="mono">{{ c.issued_at.strftime('%d %b %Y') }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+{% endblock %}

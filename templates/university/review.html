@@ -1,0 +1,6 @@
+{% extends "shared/review.html" %}
+{% set back_url = url_for('university.inbox') %}
+{% set can_act = sub.stage == 'with_university' %}
+{% set forward_action = 'forward' %}
+{% set forward_label = 'Send to the company' %}
+{% set action_title = 'Your decision' %}

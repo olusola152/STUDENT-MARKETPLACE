@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Lecturer registration — {{ uni.name }}{% endblock %}
+{% block body_class %}gate{% endblock %}
+{% block main_class %}gate-shell{% endblock %}
+
+{% block chrome %}
+{% if g.user %}
+<div class="preview-bar">
+  <span>Signed in as {{ g.user.fullname }} — this is the public page.</span>
+  <span class="preview-actions">
+    <a href="{{ url_for('home') }}">Back to my account</a>
+    <form method="post" action="{{ url_for('auth.logout') }}">
+      <button class="link-btn" type="submit">Sign out</button>
+    </form>
+  </span>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="gate-pitch">
+  <span class="mark-seal mark-seal--lg" aria-hidden="true"></span>
+  <p class="record-label">Lecturer registration</p>
+  <h1 class="display">{{ uni.name }}</h1>
+  <p class="lede">Your institution issues you a one-time passcode. It works once, and only on this portal.</p>
+  <p class="lede" style="margin-top:1rem">Pick every field you teach — that's what decides which company briefs you can see, apply for, and place your students on.</p>
+  <p class="lede" style="margin-top:1rem">No passcode? Ask whoever manages the {{ uni.name }} account.</p>
+</section>
+
+{% if g.user %}
+  <p class="flash flash--error">
+    You are signed in as {{ g.user.fullname }} ({{ g.user.role }}). This is the
+    public page — to create a new account here, sign out first.
+  </p>
+  {% endif %}
+<section class="card">
+  <p class="record-label">Lecturer · passcode required</p>
+  <h2 class="card-title">Create your account</h2>
+
+  {% if g.user %}
+  <p class="empty">Sign out to register a new account on this portal.</p>
+  {% elif closed %}
+  <p class="empty">Registration is closed for this institution.</p>
+  {% else %}
+  <form method="post" novalidate>
+    <label class="field">
+      <span>One-time passcode</span>
+      <input type="text" name="passcode" value="{{ form.passcode or '' }}" required
+             placeholder="XK4T-9PQR-2MBD" class="mono-input" autocomplete="off" autofocus>
+    </label>
+    <label class="field">
+      <span>Full name</span>
+      <input type="text" name="fullname" value="{{ form.fullname or '' }}" required>
+    </label>
+    <label class="field">
+      <span>Email</span>
+      <input type="email" name="email" value="{{ form.email or '' }}" required>
+    </label>
+    <div class="field-row">
+      <label class="field">
+        <span>Department</span>
+        <input type="text" name="department" value="{{ form.department or '' }}">
+      </label>
+      <label class="field">
+        <span>Staff number</span>
+        <input type="text" name="staff_no" value="{{ form.staff_no or '' }}">
+      </label>
+    </div>
+    <label class="field">
+      <span>Phone <em class="opt">optional</em></span>
+      <input type="tel" name="phone" value="{{ form.phone or '' }}">
+    </label>
+
+    <fieldset class="fieldset">
+      <legend>Areas of expertise</legend>
+      <div class="skill-grid">
+        {% for f in fields %}
+        <label class="skill">
+          <input type="checkbox" name="fields" value="{{ f.id }}"
+                 {% if form.fields and f.id|string in form.fields %}checked{% endif %}>
+          <span>{{ f.name }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <div class="field-row">
+      <label class="field">
+        <span>Password</span>
+        <input type="password" name="password" required minlength="8">
+      </label>
+      <label class="field">
+        <span>Repeat password</span>
+        <input type="password" name="confirm" required minlength="8">
+      </label>
+    </div>
+    <button class="btn btn--full" type="submit">Create account</button>
+  </form>
+  {% endif %}
+
+  <p class="card-foot">
+    Already registered? <a href="{{ url_for('portal.login', slug=uni.slug) }}">Sign in</a> ·
+    <a href="{{ url_for('portal.home', slug=uni.slug) }}">Back to portal</a>
+  </p>
+</section>
+{% endblock %}

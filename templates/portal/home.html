@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}{{ uni.name }} — Practical Experience Portal{% endblock %}
+{% block body_class %}gate{% endblock %}
+{% block main_class %}portal-shell{% endblock %}
+
+{% block chrome %}
+{% if g.user %}
+<div class="preview-bar">
+  <span>Signed in as {{ g.user.fullname }} — this is the public page.</span>
+  <span class="preview-actions">
+    <a href="{{ url_for('home') }}">Back to my account</a>
+    <form method="post" action="{{ url_for('auth.logout') }}">
+      <button class="link-btn" type="submit">Sign out</button>
+    </form>
+  </span>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<header class="portal-head">
+  <span class="mark-seal mark-seal--lg" aria-hidden="true"></span>
+  <p class="record-label">Practical experience portal</p>
+  <h1 class="display display--hero">{{ uni.name }}</h1>
+  <p class="lede lede--wide">
+    Real briefs from real companies. Supervised by {{ uni.name }} lecturers.
+    Delivered by {{ uni.name }} students — and every finished project becomes
+    verified evidence of what they can build.
+  </p>
+  {% if uni.website %}<p class="lede portal-site">{{ uni.website }}</p>{% endif %}
+</header>
+
+{% if config.DEMO_MODE and uni.subscription_status != 'active' %}
+<p class="flash flash--error"><strong>Demo mode.</strong> Registration is open even though this institution has not subscribed. Turn DEMO_MODE off before going live.</p>
+{% endif %}
+
+{% if not portal_live %}
+<section class="panel panel--closed">
+  <p class="record-label">Portal closed</p>
+  <h2 class="display" style="font-size:1.8rem">{{ uni.name }}'s subscription has {{ 'expired' if status == 'expired' else 'not been activated' }}.</h2>
+  <p class="lede lede--wide">Registration and sign-in for students and lecturers are unavailable
+    until {{ uni.name }} renews. Existing accounts keep their data — nothing is lost.</p>
+  <p class="lede lede--wide" style="margin-top:1rem">If you manage this institution's account,
+    <a href="{{ url_for('auth.login') }}">sign in</a> to renew.</p>
+</section>
+{% else %}
+
+<section class="pitch-row">
+  <article class="pitch">
+    <p class="pitch-num">01</p>
+    <h2 class="pitch-title">Companies post real work</h2>
+    <p>Live briefs with deadlines, required skills and, on paid projects, a reward. Not coursework invented for marking.</p>
+  </article>
+  <article class="pitch">
+    <p class="pitch-num">02</p>
+    <h2 class="pitch-title">Your lecturers supervise</h2>
+    <p>A lecturer takes on a brief in their own field, then chooses which of their students work on it. Nothing is unsupervised.</p>
+  </article>
+  <article class="pitch">
+    <p class="pitch-num">03</p>
+    <h2 class="pitch-title">Students leave with proof</h2>
+    <p>Assessed work, a GitHub repository and a certificate — a record an employer can check, not just a course code.</p>
+  </article>
+</section>
+
+<h2 class="section-head">Join {{ uni.name }} on the platform</h2>
+
+<div class="join-grid">
+  <article class="card card--action">
+    <p class="record-label">Student</p>
+    <h3 class="card-title">Create a student account</h3>
+    <p class="lede">Free — your institution's subscription covers you. Browse every brief companies post and get placed on the ones matching your course.</p>
+    <p class="action-foot"><a class="btn btn--full" href="{{ url_for('portal.student_signup', slug=uni.slug) }}">Register as a student</a></p>
+  </article>
+
+  <article class="card card--action">
+    <p class="record-label">Lecturer</p>
+    <h3 class="card-title">Create a lecturer account</h3>
+    <p class="lede">You'll need a one-time passcode from {{ uni.name }}. Your areas of expertise decide which briefs you can take on and supervise.</p>
+    <p class="action-foot"><a class="btn btn--full" href="{{ url_for('portal.lecturer_signup', slug=uni.slug) }}">Register with a passcode</a></p>
+  </article>
+</div>
+
+<section class="panel panel--center portal-signin">
+  <h2 class="panel-title">Already registered?</h2>
+  <p class="lede">Students, lecturers and {{ uni.name }} staff all sign in here.</p>
+  <p style="margin-top:1.2rem">
+    <a class="btn" href="{{ url_for('portal.login', slug=uni.slug) }}">Sign in</a>
+  </p>
+</section>
+{% endif %}
+
+<footer class="portal-foot">
+  <p>{{ uni.name }}{% if uni.city %} · {{ uni.city }}{% endif %} · Practical experience portal</p>
+</footer>
+{% endblock %}

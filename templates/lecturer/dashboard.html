@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Lecturer dashboard{% endblock %}
+{% block content %}
+<section class="page-head page-head--split">
+  <div>
+    <p class="record-label">Lecturer{% if g.university %} · {{ g.university.name }}{% endif %}</p>
+    <h1 class="display">{{ g.user.fullname }}</h1>
+    <p class="lede">{% for f in fields %}{{ f.name }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
+  </div>
+  <a class="btn" href="{{ url_for('lecturer.browse') }}">Find projects</a>
+</section>
+
+{% if g.university and g.university.subscription_status != 'active' %}
+<p class="flash flash--error">Your university subscription is not active, so you cannot apply for projects or place students yet.</p>
+{% endif %}
+
+<section class="stat-grid">
+  <article class="stat"><p class="stat-num">{{ stats.available }}</p><p class="stat-label">Open in your fields</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.pending }}</p><p class="stat-label">Awaiting approval</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.approved }}</p><p class="stat-label">Approved</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.pending }}</p><p class="stat-label">Requests pending</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.students }}</p><p class="stat-label">Students placed</p></article>
+  <article class="stat {% if stats.overdue %}stat--warn{% endif %}"><p class="stat-num">{{ stats.overdue }}</p><p class="stat-label">Overdue phases</p></article>
+</section>
+
+{% if g.university %}
+<section class="panel">
+  <h2 class="panel-title">Invite your students</h2>
+  <p class="lede">Send this link to students in your classes. It registers them under {{ g.university.name }} so you can place them on projects.</p>
+  <p class="code" style="margin-top:.9rem">{{ url_for('portal.student_signup', slug=g.university.slug, _external=True) }}</p>
+  <p class="card-foot">Only students registered under your institution and in your field appear when you place students on a project.</p>
+</section>
+{% endif %}
+
+{% if requests_out %}
+<section class="panel">
+  <h2 class="panel-title">Your project requests</h2>
+  <table class="ledger">
+    <thead><tr><th>Project</th><th>Company</th><th>Places</th><th>Asked</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for r in requests_out %}
+      <tr>
+        <td><a href="{{ url_for('lecturer.project_detail', project_id=r.project_id) }}">{{ r.title }}</a></td>
+        <td>{{ r.company_name }}</td>
+        <td class="mono">{{ r.places }}</td>
+        <td class="mono">{{ r.created_at.strftime('%d %b %Y') }}</td>
+        <td><span class="status status--{{ r.status }}">{{ r.status }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+<section class="panel">
+  <h2 class="panel-title">Projects you supervise</h2>
+  {% if supervising %}
+  <table class="ledger">
+    <thead><tr><th>Project</th><th>Students</th><th>Progress</th><th>Deadline</th></tr></thead>
+    <tbody>
+      {% for s in supervising %}
+      <tr>
+        <td>{{ s.title }}</td>
+        <td class="mono">{{ s.student_count }}</td>
+        <td class="mono">{{ s.done or 0 }}/{{ s.total or 0 }} phases</td>
+        <td class="mono">{{ s.deadline.strftime('%d %b %Y') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">Nothing yet. Find a project in your field, apply, and place your students once the company approves.</p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Lecturer requests{% endblock %}
+{% block content %}
+{% if project %}<p class="backlink"><a href="{{ url_for('company.projects') }}">Back to your projects</a></p>{% endif %}
+<section class="page-head">
+  <p class="record-label">Approval</p>
+  <h1 class="display">{{ project.title if project else 'Lecturer requests' }}</h1>
+  <p class="lede">Lecturers ask before placing students. Approve one and they can assign the number of places you grant.</p>
+</section>
+
+{% if requests %}
+<div class="project-list">
+  {% for r in requests %}
+  <article class="project">
+    <div class="project-head">
+      <h2 class="project-title">{{ r.lecturer_name }}</h2>
+      <span class="status status--{{ r.status }}">{{ r.status }}</span>
+    </div>
+    <p class="project-client">{{ r.university_name or '—' }}{% if not project %} · {{ r.title }}{% endif %}</p>
+
+    <dl class="project-meta">
+      <div><dt>Department</dt><dd>{{ r.department or '—' }}</dd></div>
+      <div><dt>Expertise</dt><dd>{{ r.expertise or '—' }}</dd></div>
+      <div><dt>Places asked</dt><dd>{{ r.places }} of {{ r.max_students }}</dd></div>
+      <div><dt>Students placed</dt><dd>{{ r.placed }}</dd></div>
+      <div><dt>Asked</dt><dd>{{ r.created_at.strftime('%d %b %Y') }}</dd></div>
+    </dl>
+
+    <p class="prose prose--quote">{{ r.message }}</p>
+
+    {% if r.status == 'pending' %}
+    <div class="project-actions">
+      <form method="post" action="{{ url_for('company.approve_request', request_id=r.id) }}">
+        <button class="btn btn--small" type="submit">Approve</button>
+      </form>
+      <form method="post" action="{{ url_for('company.decline_request', request_id=r.id) }}" class="inline-form">
+        <input type="text" name="reason" placeholder="reason (optional)" class="mini-input">
+        <button class="btn btn--small btn--quiet" type="submit">Decline</button>
+      </form>
+    </div>
+    {% endif %}
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">No lecturer has asked for this work yet. Lecturers see open briefs and request the ones they want to supervise.</p>
+{% endif %}
+{% endblock %}

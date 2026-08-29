@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">Messages</p>
+  <h1 class="display">Notifications</h1>
+</section>
+
+{% if rows %}
+<ul class="notif-list">
+  {% for n in rows %}
+  <li class="notif {% if not n.read_at %}notif--new{% endif %}">
+    <div>
+      {% if n.url %}<a href="{{ n.url }}">{{ n.body }}</a>{% else %}{{ n.body }}{% endif %}
+      <span class="mono">{{ n.created_at.strftime('%d %b %Y, %H:%M') }}</span>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="empty">Nothing yet.</p>
+{% endif %}
+{% endblock %}

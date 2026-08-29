@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Lecturer passcodes{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">{{ uni.name }}</p>
+  <h1 class="display">Lecturer passcodes</h1>
+  <p class="lede">Each code registers one lecturer and expires after {{ days }} days. Lecturers register at
+    <strong>{{ url_for('portal.lecturer_signup', slug=uni.slug, _external=True) }}</strong> — the code identifies your institution, so they never pick it from a list.</p>
+</section>
+
+{% if issued %}
+<section class="panel panel--highlight">
+  <h2 class="panel-title">New codes — copy them now</h2>
+  <p class="lede">These are shown once. We store only a hash, so they cannot be shown again.</p>
+  <p class="lede" style="margin-top:.6rem">Send each lecturer their code and this link:
+    <strong>{{ url_for('portal.lecturer_signup', slug=uni.slug, _external=True) }}</strong></p>
+  <ul class="code-list">
+    {% for c in issued %}<li class="code">{{ c }}</li>{% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="panel">
+  <h2 class="panel-title">Issue codes</h2>
+  <form method="post">
+    <div class="field-row">
+      <label class="field">
+        <span>How many</span>
+        <input type="number" name="count" min="1" max="25" value="1" required>
+      </label>
+      <label class="field">
+        <span>Label <em class="opt">optional</em></span>
+        <input type="text" name="label" placeholder="Faculty of Science, 2026 intake">
+      </label>
+    </div>
+    <button class="btn" type="submit">Generate</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Issued codes</h2>
+  {% if codes %}
+  <table class="ledger">
+    <thead><tr><th>Code</th><th>Label</th><th>Status</th><th>Used by</th><th>Expires</th><th></th></tr></thead>
+    <tbody>
+      {% for c in codes %}
+      <tr>
+        <td class="mono">{{ c.code_hint }}-••••-••••</td>
+        <td>{{ c.label or '—' }}</td>
+        <td>
+          {% if c.used_at %}<span class="status status--done">used</span>
+          {% elif c.expires_at <= now %}<span class="status status--rejected">expired</span>
+          {% else %}<span class="status status--pending">open</span>{% endif %}
+        </td>
+        <td>{{ c.used_by_name or '—' }}</td>
+        <td class="mono">{{ c.expires_at.strftime('%d %b %Y') }}</td>
+        <td>
+          {% if not c.used_at and c.expires_at > now %}
+          <form method="post" action="{{ url_for('university.revoke_passcode', passcode_id=c.id) }}">
+            <button class="link-btn" type="submit">Revoke</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">No codes issued yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

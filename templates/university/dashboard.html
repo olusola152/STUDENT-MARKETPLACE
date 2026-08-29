@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}University dashboard{% endblock %}
+{% block content %}
+<section class="page-head page-head--split">
+  <div>
+    <p class="record-label">Institution admin</p>
+    <h1 class="display">{{ uni.name }}</h1>
+    <p class="lede">Subscription <strong>{{ uni.subscription_status }}</strong>{% if uni.subscribed_until %} · until {{ uni.subscribed_until.strftime('%d %b %Y') }}{% endif %}</p>
+  </div>
+  <a class="btn" href="{{ url_for('university.passcodes') }}">Issue lecturer codes</a>
+</section>
+
+{% if uni.subscription_status != 'active' %}
+<p class="flash flash--error">Your subscription is {{ uni.subscription_status }}. Lecturers cannot register or apply for projects until an administrator activates it.</p>
+{% endif %}
+
+<section class="stat-grid">
+  <article class="stat"><p class="stat-num">{{ stats.lecturers }}</p><p class="stat-label">Lecturers</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.students }}</p><p class="stat-label">Students</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.open_codes }}</p><p class="stat-label">Unused codes</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.placements }}</p><p class="stat-label">Placements</p></article>
+  <article class="stat stat--seal"><p class="stat-num">{{ stats.completed }}</p><p class="stat-label">Completed</p></article>
+</section>
+
+<section class="panel panel--highlight">
+  <h2 class="panel-title">Your public portal</h2>
+  <p class="lede">This is the page the world sees. Share it with staff and students — registration and sign-in both happen there.
+    <a href="{{ url_for('portal.home', slug=uni.slug) }}" target="_blank" rel="noopener">Open it</a>.</p>
+  <p class="code" style="margin-top:.9rem">{{ url_for('portal.home', slug=uni.slug, _external=True) }}</p>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Direct links</h2>
+  <p class="lede">Send lecturers the lecturer link along with their one-time passcode. Lecturers can pass the student link on to their own classes.</p>
+
+  <p class="record-label" style="margin-top:1.2rem">Lecturer registration — needs a passcode</p>
+  <p class="code" style="margin-top:.5rem">{{ url_for('portal.lecturer_signup', slug=uni.slug, _external=True) }}</p>
+
+  <p class="record-label" style="margin-top:1.2rem">Student registration — open to your students</p>
+  <p class="code" style="margin-top:.5rem">{{ url_for('portal.student_signup', slug=uni.slug, _external=True) }}</p>
+
+  <p class="record-label" style="margin-top:1.2rem">Sign in</p>
+  <p class="code" style="margin-top:.5rem">{{ url_for('portal.login', slug=uni.slug, _external=True) }}</p>
+
+  <p class="card-foot">Issue passcodes under Passcodes. You sign in to this dashboard from the same portal link.</p>
+</section>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Projects{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">Open briefs</p>
+  <h1 class="display">Projects</h1>
+  <p class="lede">Browse what companies are asking for. Your lecturer applies for these and places students — you can't apply directly.</p>
+</section>
+
+<form class="filters" method="get">
+  <label class="field">
+    <span>Search</span>
+    <input type="search" name="q" value="{{ search }}" placeholder="inventory, chatbot...">
+  </label>
+  <button class="btn btn--quiet" type="submit">Search</button>
+</form>
+
+{% if projects %}
+<div class="project-list">
+  {% for p in projects %}
+  <article class="project">
+    <div class="project-head">
+      <h2 class="project-title"><a href="{{ url_for('student.project_detail', project_id=p.id) }}">{{ p.title }}</a></h2>
+      <span class="status">{{ p.field_name }}</span>
+    </div>
+    <p class="project-client">{{ p.company_name }}</p>
+    <dl class="project-meta">
+      <div><dt>Difficulty</dt><dd>{{ p.difficulty|capitalize }}</dd></div>
+      <div><dt>Deadline</dt><dd>{{ p.deadline.strftime('%d %b %Y') }}</dd></div>
+      <div><dt>Places</dt><dd>{{ p.max_students }}</dd></div>
+    </dl>
+    {% if p.skill_list %}<p class="project-skills">{{ p.skill_list }}</p>{% endif %}
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">No open projects match that search.</p>
+{% endif %}
+{% endblock %}

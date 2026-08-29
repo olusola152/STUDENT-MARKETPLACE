@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">Platform</p>
+  <h1 class="display">Administration</h1>
+</section>
+
+<section class="stat-grid">
+  <article class="stat"><p class="stat-num">{{ stats.students }}</p><p class="stat-label">Students</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.lecturers }}</p><p class="stat-label">Lecturers</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.universities }}</p><p class="stat-label">Universities</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.companies }}</p><p class="stat-label">Companies</p></article>
+  <article class="stat {% if stats.pending_subs %}stat--warn{% endif %}"><p class="stat-num">{{ stats.pending_subs }}</p><p class="stat-label">Awaiting activation</p></article>
+</section>
+
+<section class="stat-grid" style="margin-top:1rem">
+  <article class="stat"><p class="stat-num">{{ stats.projects }}</p><p class="stat-label">Projects</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.placements }}</p><p class="stat-label">Placements</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.blocked }}</p><p class="stat-label">Blocked accounts</p></article>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Newest accounts</h2>
+  <table class="ledger">
+    <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th></tr></thead>
+    <tbody>
+      {% for u in recent %}
+      <tr>
+        <td>{{ u.fullname }}</td><td class="mono">{{ u.email }}</td>
+        <td><span class="role-tag role-tag--{{ u.role }}">{{ u.role }}</span></td>
+        <td><span class="status status--{{ u.status }}">{{ u.status }}</span></td>
+        <td class="mono">{{ u.created_at.strftime('%d %b %Y') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="card-foot">
+    <a href="{{ url_for('admin.users') }}">All users</a> ·
+    <a href="{{ url_for('admin.universities') }}">Universities</a> ·
+    <a href="{{ url_for('admin.companies') }}">Companies</a> ·
+    <a href="{{ url_for('admin.projects') }}">Projects</a> ·
+    <a href="{{ url_for('admin.placements') }}">Placements</a> ·
+    <a href="{{ url_for('admin.subscriptions') }}">Subscriptions</a>
+  </p>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Recent activity</h2>
+  {% if activity %}
+  <table class="ledger">
+    <thead><tr><th>Action</th><th>By</th><th>Target</th><th>Detail</th><th>When</th></tr></thead>
+    <tbody>
+      {% for a in activity %}
+      <tr>
+        <td class="mono">{{ a.action }}</td><td>{{ a.actor or 'system' }}</td>
+        <td class="mono">{{ a.target_type or '—' }} {{ a.target_id or '' }}</td>
+        <td>{{ a.detail or '—' }}</td>
+        <td class="mono">{{ a.created_at.strftime('%d %b %H:%M') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">Nothing logged yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

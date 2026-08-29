@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ project.title }}{% endblock %}
+{% block content %}
+<p class="backlink"><a href="{{ url_for('student.browse') }}">Back to projects</a></p>
+<section class="page-head">
+  <p class="record-label">{{ project.field_name }}</p>
+  <h1 class="display">{{ project.title }}</h1>
+  <p class="lede">{{ project.company_name }}</p>
+</section>
+
+<section class="stat-grid">
+  <article class="stat"><p class="stat-num">{{ (project.deadline - today).days }}</p><p class="stat-label">Days left</p></article>
+  <article class="stat"><p class="stat-num">{{ project.max_students }}</p><p class="stat-label">Places</p></article>
+  <article class="stat"><p class="stat-num">{{ project.difficulty|capitalize }}</p><p class="stat-label">Difficulty</p></article>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">What needs building</h2>
+  <p class="prose">{{ project.description }}</p>
+  {% if project.deliverables %}<h3 class="panel-title">Deliverables</h3><p class="prose">{{ project.deliverables }}</p>{% endif %}
+  {% if project.skill_list %}<p class="project-skills">Skills: {{ project.skill_list }}</p>{% endif %}
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">How to get on this project</h2>
+  <p class="empty">A lecturer in {{ project.field_name }} at your university applies to the company. Once approved, they choose students from their field. Make sure your portfolio and GitHub link are up to date so you're an obvious pick.</p>
+</section>
+{% endblock %}

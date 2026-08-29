@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Monitor {{ row.student_name }}{% endblock %}
+{% block content %}
+<p class="backlink"><a href="{{ url_for('lecturer.inbox') }}">Back to applications</a></p>
+<section class="page-head">
+  <p class="record-label">{{ row.title }} · {{ row.company_name }}</p>
+  <h1 class="display">{{ row.student_name }}</h1>
+  <p class="lede">Status {{ row.status }} · project due {{ row.deadline.strftime('%d %b %Y') }}{% if row.github_url %} · {{ row.github_url }}{% endif %}</p>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Phases</h2>
+  {% for m in milestones %}
+  <form method="post" action="{{ url_for('lecturer.update_milestone', milestone_id=m.id) }}" class="phase-form">
+    <div class="phase-head">
+      <strong>Phase {{ m.phase }} — {{ m.title }}</strong>
+      <span class="mono">due {{ m.due_date.strftime('%d %b') }}{% if m.status != 'done' and m.due_date < today %} · overdue{% endif %}</span>
+    </div>
+    <div class="phase-controls">
+      <select name="status">
+        {% for opt in ['pending','in_progress','done'] %}
+        <option value="{{ opt }}" {% if m.status == opt %}selected{% endif %}>{{ opt.replace('_',' ') }}</option>
+        {% endfor %}
+      </select>
+      <input type="text" name="note" value="{{ m.note or '' }}" placeholder="Supervision note">
+      <button class="btn btn--small btn--quiet" type="submit">Update</button>
+    </div>
+  </form>
+  {% endfor %}
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Submissions</h2>
+  {% if submissions %}
+  <table class="ledger">
+    <thead><tr><th>Version</th><th>Repository</th><th>Notes</th><th>Submitted</th></tr></thead>
+    <tbody>
+      {% for s in submissions %}
+      <tr><td class="mono">v{{ s.version }}</td><td class="mono">{{ s.repo_url }}</td>
+      <td>{{ s.comment or '—' }}</td><td class="mono">{{ s.submitted_at.strftime('%d %b %Y') }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">Nothing submitted yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

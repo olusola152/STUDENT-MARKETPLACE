@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Student &amp; Client Marketplace{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+{% block chrome %}
+{% if g.user %}
+<header class="topbar">
+  <a class="mark" href="{{ url_for('home') }}">
+    <span class="mark-seal" aria-hidden="true"></span>
+    <span class="mark-name">Marketplace</span>
+  </a>
+
+  <nav class="topnav">
+    {% if g.user.role == 'student' %}
+      <a href="{{ url_for('student.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('student.browse') }}">Projects</a>
+      <a href="{{ url_for('student.profile') }}">Profile</a>
+      <a href="{{ url_for('student.notifications') }}">Alerts{% if unread %} <span class="pip">{{ unread }}</span>{% endif %}</a>
+    {% elif g.user.role == 'lecturer' %}
+      <a href="{{ url_for('lecturer.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('lecturer.browse') }}">Find projects</a>
+      <a href="{{ url_for('lecturer.students') }}">Students</a>
+      <a href="{{ url_for('lecturer.inbox') }}">Inbox</a>
+      <a href="{{ url_for('lecturer.profile') }}">Profile</a>
+      <a href="{{ url_for('lecturer.notifications') }}">Alerts{% if unread %} <span class="pip">{{ unread }}</span>{% endif %}</a>
+    {% elif g.user.role == 'university' %}
+      <a href="{{ url_for('university.dashboard') }}">Admin</a>
+      <a href="{{ url_for('portal.home', slug=g.university.slug) }}">Portal</a>
+      <a href="{{ url_for('university.lecturers') }}">Lecturers</a>
+      <a href="{{ url_for('university.students') }}">Students</a>
+      <a href="{{ url_for('university.passcodes') }}">Passcodes</a>
+      <a href="{{ url_for('university.inbox') }}">Inbox</a>
+      <a href="{{ url_for('university.placements') }}">Placements</a>
+      <a href="{{ url_for('university.notifications') }}">Alerts{% if unread %} <span class="pip">{{ unread }}</span>{% endif %}</a>
+    {% elif g.user.role == 'company' %}
+      <a href="{{ url_for('company.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('company.projects') }}">Projects</a>
+      <a href="{{ url_for('company.requests') }}">Requests</a>
+      <a href="{{ url_for('company.requests') }}">Requests</a>
+      <a href="{{ url_for('company.inbox') }}">Inbox</a>
+      <a href="{{ url_for('company.notifications') }}">Alerts{% if unread %} <span class="pip">{{ unread }}</span>{% endif %}</a>
+    {% elif g.user.role == 'admin' %}
+      <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('admin.users') }}">Users</a>
+      <a href="{{ url_for('admin.universities') }}">Universities</a>
+      <a href="{{ url_for('admin.companies') }}">Companies</a>
+      <a href="{{ url_for('admin.projects') }}">Projects</a>
+      <a href="{{ url_for('admin.placements') }}">Placements</a>
+      <a href="{{ url_for('admin.activity') }}">Activity</a>
+      <a href="{{ url_for('admin.notifications') }}">Alerts{% if unread %} <span class="pip">{{ unread }}</span>{% endif %}</a>
+    {% endif %}
+  </nav>
+
+  <div class="topbar-right">
+    <span class="whoami">
+      {{ g.user.fullname }}
+      <span class="role-tag role-tag--{{ g.user.role }}">{{ g.user.role }}</span>
+    </span>
+    <form method="post" action="{{ url_for('auth.logout') }}">
+      <button class="link-btn" type="submit">Sign out</button>
+    </form>
+  </div>
+</header>
+{% endif %}
+{% endblock %}
+
+{% if g.user and sub_live is defined and not sub_live and g.university %}
+<p class="expired-bar">
+  {{ g.university.name }}'s subscription has expired. The platform is read-only
+  for {{ g.university.name }} until it is renewed.
+</p>
+{% endif %}
+
+{% if config.DEMO_MODE %}
+<p class="demo-strip">Demo mode — subscription checks are switched off</p>
+{% endif %}
+
+{% if g.user and sub_live is defined and not sub_live and g.university %}
+<p class="expired-bar">
+  {{ g.university.name }}'s subscription has expired. The platform is read-only
+  for {{ g.university.name }} until it is renewed.
+</p>
+{% endif %}
+
+{% if config.DEMO_MODE %}
+<p class="demo-bar">Demo mode — subscriptions are bypassed and registration is open. Turn this off before going live.</p>
+{% endif %}
+
+<main class="{% block main_class %}shell{% endblock %}">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class="flashes">
+      {% for category, message in messages %}
+        <li class="flash flash--{{ category }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

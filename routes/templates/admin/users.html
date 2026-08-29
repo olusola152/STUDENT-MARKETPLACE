@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Users{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">Accounts</p>
+  <h1 class="display">Users</h1>
+</section>
+
+<form class="filters" method="get">
+  <label class="field">
+    <span>Search</span>
+    <input type="search" name="q" value="{{ search }}" placeholder="name or email">
+  </label>
+  <label class="field">
+    <span>Role</span>
+    <select name="role">
+      <option value="">All roles</option>
+      {% for r in ['student','lecturer','university','company','admin'] %}
+      <option value="{{ r }}" {% if role == r %}selected{% endif %}>{{ r|capitalize }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <button class="btn btn--quiet" type="submit">Filter</button>
+</form>
+
+<table class="ledger">
+  <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Organisation</th><th>Last login</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.fullname }}</td>
+      <td class="mono">{{ u.email }}</td>
+      <td><span class="role-tag role-tag--{{ u.role }}">{{ u.role }}</span></td>
+      <td>{{ u.org or '—' }}</td>
+      <td class="mono">{{ u.last_login_at.strftime('%d %b %Y') if u.last_login_at else 'never' }}</td>
+      <td>
+        <span class="status status--{{ u.status }}">{{ u.status }}</span>
+        {% if u.blocked_reason %}<br><span class="mono">{{ u.blocked_reason }}</span>{% endif %}
+      </td>
+      <td>
+        {% if u.role != 'admin' %}
+          {% if u.status == 'active' %}
+          <form method="post" action="{{ url_for('admin.block_user', user_id=u.id) }}" class="inline-form">
+            <input type="text" name="reason" placeholder="reason" class="mini-input">
+            <button class="link-btn" type="submit">Block</button>
+          </form>
+          {% else %}
+          <form method="post" action="{{ url_for('admin.unblock_user', user_id=u.id) }}">
+            <button class="link-btn" type="submit">Unblock</button>
+          </form>
+          {% endif %}
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Student dashboard{% endblock %}
+{% block content %}
+<section class="page-head page-head--split">
+  <div>
+    <p class="record-label">Student</p>
+    <h1 class="display">{{ g.user.fullname }}</h1>
+    <p class="lede">{{ profile.university_name or 'No university' }}{% if profile.field_name %} · {{ profile.field_name }}{% endif %}{% if profile.level %} · {{ profile.level }} level{% endif %}</p>
+  </div>
+  <a class="btn" href="{{ url_for('student.browse') }}">Browse projects</a>
+</section>
+
+<section class="stat-grid">
+  <article class="stat"><p class="stat-num">{{ stats.available }}</p><p class="stat-label">In your field</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.active }}</p><p class="stat-label">Active work</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.overdue }}</p><p class="stat-label">Overdue phases</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.completed }}</p><p class="stat-label">Completed</p></article>
+  <article class="stat stat--seal"><p class="stat-num">{{ stats.certificates }}</p><p class="stat-label">Certificates</p></article>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Your placements</h2>
+  {% if active %}
+  <table class="ledger">
+    <thead><tr><th>Project</th><th>Company</th><th>Supervisor</th><th>Progress</th><th>Work</th><th>Deadline</th><th></th></tr></thead>
+    <tbody>
+      {% for a in active %}
+      <tr>
+        <td>{{ a.title }}</td>
+        <td>{{ a.company_name }}</td>
+        <td>{{ a.lecturer_name }}</td>
+        <td class="mono">{{ a.done }}/{{ a.total }} phases</td>
+        <td>{% if a.stage %}<span class="status status--{{ a.stage }}">{{ stage_label[a.stage] }}</span>{% else %}—{% endif %}</td>
+        <td class="mono">{{ a.deadline.strftime('%d %b %Y') }}</td>
+        <td><a href="{{ url_for('student.work', assignment_id=a.id) }}">Open</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">Nothing assigned yet. Your lecturer places you on projects — browse what's available so you know what's coming.</p>
+  {% endif %}
+</section>
+{% endblock %}

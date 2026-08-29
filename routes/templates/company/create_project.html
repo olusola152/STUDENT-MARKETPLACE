@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Post a project{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">New brief</p>
+  <h1 class="display">Post a project</h1>
+  <p class="lede">Lecturers browse open briefs and assign them to their students. The field you choose decides which lecturers see it first.</p>
+</section>
+
+<section class="panel">
+  <form method="post" novalidate id="project-form">
+    <label class="field">
+      <span>Project title</span>
+      <input type="text" name="title" value="{{ form.title or '' }}" required
+             placeholder="Build a pharmacy inventory system">
+    </label>
+
+    <label class="field">
+      <span>What needs building</span>
+      <textarea name="description" rows="7" required
+        placeholder="The problem, what the finished work should do, and the constraints.">{{ form.description or '' }}</textarea>
+    </label>
+
+    <label class="field">
+      <span>Deliverables <em class="opt">optional</em></span>
+      <textarea name="deliverables" rows="3"
+        placeholder="Source code, documentation, deployed demo...">{{ form.deliverables or '' }}</textarea>
+    </label>
+
+    <div class="field-row">
+      <label class="field">
+        <span>Field of study</span>
+        <select name="field_id" required>
+          <option value="">Choose one</option>
+          {% for f in fields %}
+          <option value="{{ f.id }}" {% if form.field_id == f.id|string %}selected{% endif %}>{{ f.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="field">
+        <span>Difficulty</span>
+        <select name="difficulty" required>
+          {% for d in difficulties %}
+          <option value="{{ d }}" {% if form.difficulty == d %}selected{% endif %}>{{ d|capitalize }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+
+    <div class="field-row">
+      <label class="field">
+        <span>Deadline</span>
+        <input type="date" name="deadline" value="{{ form.deadline or '' }}" required>
+      </label>
+      <label class="field field--narrow">
+        <span>Students allowed</span>
+        <input type="number" name="max_students" min="1" max="20" value="{{ form.max_students or 1 }}" required>
+      </label>
+    </div>
+
+    <fieldset class="fieldset">
+      <legend>Required skills</legend>
+      <div class="skill-grid">
+        {% for s in skills %}
+        <label class="skill">
+          <input type="checkbox" name="skills" value="{{ s.id }}"
+                 {% if form.skills and s.id|string in form.skills %}checked{% endif %}>
+          <span>{{ s.name }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <div class="form-actions">
+      <button class="btn" type="submit" name="publish" value="1">Publish project</button>
+      <button class="btn btn--quiet" type="submit" name="draft" value="1">Save as draft</button>
+    </div>
+  </form>
+</section>
+{% endblock %}
+

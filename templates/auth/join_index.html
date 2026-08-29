@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Find your university{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">Students and lecturers</p>
+  <h1 class="display">Find your university</h1>
+  <p class="lede">Every subscribed institution has its own portal. Registration and sign-in both happen there.</p>
+</section>
+
+{% if universities %}
+<div class="project-list">
+  {% for u in universities %}
+  <article class="project">
+    <div class="project-head">
+      <h2 class="project-title"><a href="{{ url_for('portal.home', slug=u.slug) }}">{{ u.name }}</a></h2>
+      {% if u.city %}<span class="status">{{ u.city }}</span>{% endif %}
+    </div>
+    {% if u.website %}<p class="project-client">{{ u.website }}</p>{% endif %}
+    <div class="project-actions">
+      <a class="btn btn--small" href="{{ url_for('portal.home', slug=u.slug) }}">Open portal</a>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">No universities have an active subscription yet. Ask your school to subscribe on the <a href="{{ url_for('auth.register') }}">main signup page</a>.</p>
+{% endif %}
+
+<p class="card-foot"><a href="{{ url_for('auth.login') }}">Back to sign in</a></p>
+{% endblock %}

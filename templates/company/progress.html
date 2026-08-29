@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Progress{% endblock %}
+{% block content %}
+<p class="backlink"><a href="{{ url_for('company.projects') }}">Back to your projects</a></p>
+<section class="page-head">
+  <p class="record-label">Progress</p>
+  <h1 class="display">{{ project.title }}</h1>
+  <p class="lede">Due {{ project.deadline.strftime('%d %b %Y') }}</p>
+</section>
+{% if students %}
+<table class="ledger">
+  <thead><tr><th>Student</th><th>University</th><th>Supervisor</th><th>Phases done</th><th>Status</th><th>GitHub</th></tr></thead>
+  <tbody>
+    {% for s in students %}
+    <tr>
+      <td>{{ s.fullname }}</td><td>{{ s.university_name or '—' }}</td>
+      <td>{{ s.lecturer_name }}</td><td class="mono">{{ s.done }}/{{ s.total }}</td>
+      <td><span class="status status--{{ s.status }}">{{ s.status }}</span></td>
+      <td class="mono">{{ s.github_url or '—' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">No students placed yet.</p>
+{% endif %}
+{% endblock %}

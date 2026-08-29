@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Inbox{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">Review</p>
+  <h1 class="display">Work awaiting your verdict</h1>
+</section>
+
+{% if submissions %}
+<div class="project-list">
+  {% for s in submissions %}
+  <article class="project">
+    <div class="project-head">
+      <h2 class="project-title">{{ s.title }} <span class="mono">v{{ s.version }}</span></h2>
+      <span class="status status--{{ s.stage }}">{{ s.stage.replace('_',' ') }}</span>
+    </div>
+    <p class="project-client">
+      {{ s.student_name }}{% if s.lecturer_name is defined and s.lecturer_name %} · {{ s.lecturer_name }}{% endif %}{% if s.university_name is defined and s.university_name %} · {{ s.university_name }}{% endif %}{% if s.company_name is defined and s.company_name %} · {{ s.company_name }}{% endif %}
+    </p>
+    <dl class="project-meta">
+      <div><dt>Repository</dt><dd class="mono">{{ s.repo_url }}</dd></div>
+      <div><dt>Updated</dt><dd>{{ s.updated_at.strftime('%d %b %Y') if s.updated_at else s.submitted_at.strftime('%d %b %Y') }}</dd></div>
+    </dl>
+    {% if s.notes %}<p class="project-skills">{{ s.notes[:180] }}</p>{% endif %}
+    <div class="project-actions">
+      <a class="btn btn--small" href="{{ url_for('company.review', submission_id=s.id) }}">
+        {% if s.stage == 'with_company' %}Review{% else %}View{% endif %}</a>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">Nothing here yet. Work appears once your universities send it on.</p>
+{% endif %}
+{% endblock %}

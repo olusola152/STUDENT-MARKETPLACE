@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Review — {{ sub.title }}{% endblock %}
+{% block content %}
+<p class="backlink"><a href="{{ back_url }}">Back to inbox</a></p>
+<section class="page-head">
+  <p class="record-label">{{ sub.company_name }} · version {{ sub.version }}</p>
+  <h1 class="display">{{ sub.title }}</h1>
+  <p class="lede">{{ sub.student_name }}, supervised by {{ sub.lecturer_name }}</p>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Submitted work</h2>
+  <dl class="project-meta">
+    <div><dt>Repository</dt><dd class="mono">{{ sub.repo_url }}</dd></div>
+    <div><dt>Submitted</dt><dd>{{ sub.submitted_at.strftime('%d %b %Y') }}</dd></div>
+    <div><dt>Stage</dt><dd><span class="status status--{{ sub.stage }}">{{ sub.stage.replace('_',' ') }}</span></dd></div>
+  </dl>
+  {% if sub.notes %}<p class="prose prose--quote">{{ sub.notes }}</p>{% endif %}
+  <p><a class="btn btn--small btn--quiet" href="{{ sub.repo_url }}" target="_blank" rel="noopener">Open repository</a></p>
+</section>
+
+{% if timeline %}
+<section class="panel">
+  <h2 class="panel-title">Review trail</h2>
+  <ol class="trail">
+    {% for t in timeline %}
+    <li class="trail-item">
+      <div class="trail-head">
+        <strong>{{ t.fullname }}</strong>
+        <span class="role-tag role-tag--{{ t.reviewer_role }}">{{ t.reviewer_role }}</span>
+        <span class="mono">{{ t.action.replace('_',' ') }} · {{ t.created_at.strftime('%d %b %H:%M') }}</span>
+      </div>
+      {% if t.comment %}<p class="trail-comment">{{ t.comment }}</p>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
+
+{% if can_act %}
+<section class="panel">
+  <h2 class="panel-title">{{ action_title }}</h2>
+  <form method="post" novalidate>
+    <label class="field">
+      <span>Comment {% if forward_label %}<em class="opt">optional when passing it on</em>{% endif %}</span>
+      <textarea name="comment" rows="5" placeholder="What you checked, or what needs fixing."></textarea>
+    </label>
+    <div class="form-actions">
+      {% if forward_label %}
+      <button class="btn" type="submit" name="action" value="{{ forward_action }}">{{ forward_label }}</button>
+      {% endif %}
+      <button class="btn btn--quiet" type="submit" name="action" value="request_correction">Request correction</button>
+    </div>
+  </form>
+</section>
+{% else %}
+<p class="empty">This submission is not with you at the moment.</p>
+{% endif %}
+{% endblock %}

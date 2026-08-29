@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Sign in — {{ uni.name }}{% endblock %}
+{% block body_class %}gate{% endblock %}
+{% block main_class %}gate-shell{% endblock %}
+
+{% block chrome %}
+{% if g.user %}
+<div class="preview-bar">
+  <span>Signed in as {{ g.user.fullname }} — this is the public page.</span>
+  <span class="preview-actions">
+    <a href="{{ url_for('home') }}">Back to my account</a>
+    <form method="post" action="{{ url_for('auth.logout') }}">
+      <button class="link-btn" type="submit">Sign out</button>
+    </form>
+  </span>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="gate-pitch">
+  <span class="mark-seal mark-seal--lg" aria-hidden="true"></span>
+  <p class="record-label">Practical experience portal</p>
+  <h1 class="display">{{ uni.name }}</h1>
+  <p class="lede">Sign in with the email and password you chose when you registered. Students and lecturers both use this page.</p>
+</section>
+
+<section class="card">
+  <p class="record-label">Sign in</p>
+  <h2 class="card-title">Welcome back</h2>
+  <form method="post" novalidate>
+    <label class="field">
+      <span>Email</span>
+      <input type="email" name="email" value="{{ email }}" required autofocus autocomplete="email">
+    </label>
+    <label class="field">
+      <span>Password</span>
+      <input type="password" name="password" required autocomplete="current-password">
+    </label>
+    <button class="btn btn--full" type="submit">Sign in</button>
+  </form>
+  <p class="card-foot">
+    No account yet? <a href="{{ url_for('portal.home', slug=uni.slug) }}">Register on the {{ uni.name }} portal</a>
+  </p>
+</section>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Student registration — {{ uni.name }}{% endblock %}
+{% block body_class %}gate{% endblock %}
+{% block main_class %}gate-shell{% endblock %}
+
+{% block chrome %}
+{% if g.user %}
+<div class="preview-bar">
+  <span>Signed in as {{ g.user.fullname }} — this is the public page.</span>
+  <span class="preview-actions">
+    <a href="{{ url_for('home') }}">Back to my account</a>
+    <form method="post" action="{{ url_for('auth.logout') }}">
+      <button class="link-btn" type="submit">Sign out</button>
+    </form>
+  </span>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="gate-pitch">
+  <span class="mark-seal mark-seal--lg" aria-hidden="true"></span>
+  <p class="record-label">Student registration</p>
+  <h1 class="display">{{ uni.name }}</h1>
+  <p class="lede">Registration is free — your institution's subscription covers you.</p>
+  <p class="lede" style="margin-top:1rem">You won't apply for projects yourself. A lecturer teaching your course takes on the brief and picks students, so keep your GitHub link current — it's what they look at.</p>
+</section>
+
+{% if g.user %}
+  <p class="flash flash--error">
+    You are signed in as {{ g.user.fullname }} ({{ g.user.role }}). This is the
+    public page — to create a new account here, sign out first.
+  </p>
+  {% endif %}
+<section class="card">
+  <p class="record-label">Student</p>
+  <h2 class="card-title">Create your account</h2>
+
+  {% if g.user %}
+  <p class="empty">Sign out to register a new account on this portal.</p>
+  {% elif closed %}
+  <p class="empty">Registration is closed for this institution.</p>
+  {% else %}
+  <form method="post" novalidate>
+    <label class="field">
+      <span>Full name</span>
+      <input type="text" name="fullname" value="{{ form.fullname or '' }}" required autocomplete="name">
+    </label>
+    <label class="field">
+      <span>Email</span>
+      <input type="email" name="email" value="{{ form.email or '' }}" required autocomplete="email">
+    </label>
+    <label class="field">
+      <span>Course of study</span>
+      <select name="field_id" required>
+        <option value="">Choose your course</option>
+        {% for f in fields %}
+        <option value="{{ f.id }}" {% if form.field_id == f.id|string %}selected{% endif %}>{{ f.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <div class="field-row">
+      <label class="field">
+        <span>Level</span>
+        <input type="text" name="level" value="{{ form.level or '' }}" placeholder="300">
+      </label>
+      <label class="field">
+        <span>Matric number</span>
+        <input type="text" name="matric_no" value="{{ form.matric_no or '' }}">
+      </label>
+    </div>
+    <label class="field">
+      <span>Department <em class="opt">optional</em></span>
+      <input type="text" name="department" value="{{ form.department or '' }}">
+    </label>
+    <label class="field">
+      <span>GitHub profile <em class="opt">optional</em></span>
+      <input type="url" name="github_url" value="{{ form.github_url or '' }}" placeholder="https://github.com/yourname">
+    </label>
+    <label class="field">
+      <span>Phone <em class="opt">optional</em></span>
+      <input type="tel" name="phone" value="{{ form.phone or '' }}">
+    </label>
+    <div class="field-row">
+      <label class="field">
+        <span>Password</span>
+        <input type="password" name="password" required minlength="8" autocomplete="new-password">
+      </label>
+      <label class="field">
+        <span>Repeat password</span>
+        <input type="password" name="confirm" required minlength="8" autocomplete="new-password">
+      </label>
+    </div>
+    <button class="btn btn--full" type="submit">Create account</button>
+  </form>
+  {% endif %}
+
+  <p class="card-foot">
+    Already registered? <a href="{{ url_for('portal.login', slug=uni.slug) }}">Sign in</a> ·
+    <a href="{{ url_for('portal.home', slug=uni.slug) }}">Back to portal</a>
+  </p>
+</section>
+{% endblock %}

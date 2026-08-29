@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Student &amp; Client Marketplace — real projects, supervised{% endblock %}
+{% block body_class %}gate{% endblock %}
+{% block main_class %}landing{% endblock %}
+{% block chrome %}
+<header class="public-bar">
+  <a class="mark" href="{{ url_for('home') }}">
+    <span class="mark-seal" aria-hidden="true"></span>
+    <span class="mark-name">Marketplace</span>
+  </a>
+  <nav class="public-nav">
+    <a href="#how">How it works</a>
+    <a href="#who">Who it's for</a>
+    <a href="{{ url_for('auth.join_index') }}">Institutions</a>
+    <a class="btn btn--small" href="{{ url_for('auth.login') }}">Sign in</a>
+    <a class="btn btn--small btn--quiet" href="{{ url_for('auth.register') }}">Subscribe</a>
+  </nav>
+</header>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <p class="hero-tag">For universities and companies</p>
+  <h1 class="display hero-title">Real projects.<br>Supervised practice.<br>Verified graduates.</h1>
+  <p class="lede lede--wide">Companies post the work they actually need doing. University
+    lecturers take it on and place their own students. Every step is supervised, every
+    submission is reviewed, and every finished project leaves a record an employer can check.</p>
+  <p class="hero-actions">
+    <a class="btn" href="{{ url_for('auth.register') }}">Subscribe your organisation</a>
+    <a class="btn btn--quiet" href="{{ url_for('auth.join_index') }}">Find your university</a>
+  </p>
+</section>
+
+<section id="how" class="band">
+  <h2 class="section-head">How the work flows</h2>
+  <div class="flow">
+    <article class="flow-step"><p class="pitch-num">01</p><h3>Company posts a brief</h3>
+      <p>A real task with a deadline, required skills and a field of study. No fee to students, no bidding.</p></article>
+    <article class="flow-step"><p class="pitch-num">02</p><h3>Lecturer takes it on</h3>
+      <p>Any open brief. The lecturer assigns it to their own students as practical coursework.</p></article>
+    <article class="flow-step"><p class="pitch-num">03</p><h3>Students build it</h3>
+      <p>Four supervised phases against the deadline, with the lecturer tracking progress throughout.</p></article>
+    <article class="flow-step"><p class="pitch-num">04</p><h3>Work is reviewed</h3>
+      <p>Student to lecturer to university to company. Anyone in the chain can send it back for correction.</p></article>
+    <article class="flow-step"><p class="pitch-num">05</p><h3>Company approves</h3>
+      <p>A certificate is issued and the project lands in the student's verified portfolio.</p></article>
+  </div>
+</section>
+
+<section id="who" class="band band--alt">
+  <h2 class="section-head">Who subscribes</h2>
+  <div class="join-grid">
+    <article class="card">
+      <p class="record-label">Universities</p>
+      <h3 class="card-title">Give students real experience</h3>
+      <p class="lede">Get your own portal, issue passcodes to lecturers, and watch every placement your institution runs from one admin page. Students register free under your subscription.</p>
+      <p class="action-foot"><a class="btn btn--full" href="{{ url_for('auth.register') }}">Subscribe as a university</a></p>
+    </article>
+    <article class="card">
+      <p class="record-label">Companies</p>
+      <h3 class="card-title">Get real work delivered</h3>
+      <p class="lede">Post briefs to supervised student teams across every subscribed university. You review the finished work and decide whether it passes.</p>
+      <p class="action-foot"><a class="btn btn--full" href="{{ url_for('auth.register') }}">Subscribe as a company</a></p>
+    </article>
+  </div>
+  <p class="band-note">Students and lecturers do not subscribe. They join through their
+    institution's portal, free, once their university has subscribed.</p>
+</section>
+
+{% if universities %}
+<section class="band">
+  <h2 class="section-head">Institutions on the platform</h2>
+  <ul class="uni-list">
+    {% for u in universities %}
+    <li><a href="{{ url_for('portal.home', slug=u.slug) }}">{{ u.name }}{% if u.city %} <span>{{ u.city }}</span>{% endif %}</a></li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<footer class="portal-foot">
+  <p>Student &amp; Client Marketplace ·
+    <a href="{{ url_for('auth.login') }}">Sign in</a> ·
+    <a href="{{ url_for('auth.register') }}">Subscribe</a></p>
+</footer>
+{% endblock %}

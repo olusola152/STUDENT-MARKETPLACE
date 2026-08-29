@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Company dashboard{% endblock %}
+{% block content %}
+<section class="page-head page-head--split">
+  <div>
+    <p class="record-label">Company</p>
+    <h1 class="display">{{ company.name }}</h1>
+    <p class="lede">Subscription <strong>{{ company.subscription_status }}</strong>{% if company.subscribed_until %} · until {{ company.subscribed_until.strftime('%d %b %Y') }}{% endif %}</p>
+  </div>
+  <a class="btn" href="{{ url_for('company.create_project') }}">Post a project</a>
+</section>
+
+{% if company.subscription_status != 'active' %}
+<p class="flash flash--error">Your subscription is {{ company.subscription_status }}. You can look around, but posting projects needs an active subscription.</p>
+{% endif %}
+
+<section class="stat-grid">
+  <article class="stat"><p class="stat-num">{{ stats.posted }}</p><p class="stat-label">Projects posted</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.open }}</p><p class="stat-label">Currently open</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.applications }}</p><p class="stat-label">Lecturer applications</p></article>
+  <article class="stat {% if stats.requests %}stat--warn{% endif %}"><p class="stat-num">{{ stats.requests }}</p><p class="stat-label">Awaiting approval</p></article>
+  <article class="stat {% if stats.requests %}stat--warn{% endif %}"><p class="stat-num">{{ stats.requests }}</p><p class="stat-label">Lecturer requests</p></article>
+  <article class="stat"><p class="stat-num">{{ stats.students }}</p><p class="stat-label">Students working</p></article>
+  <article class="stat stat--seal"><p class="stat-num">{{ stats.completed }}</p><p class="stat-label">Completed</p></article>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Latest projects</h2>
+  {% if recent %}
+  <table class="ledger">
+    <thead><tr><th>Title</th><th>Status</th><th>Deadline</th></tr></thead>
+    <tbody>
+      {% for p in recent %}
+      <tr><td>{{ p.title }}</td>
+      <td><span class="status status--{{ p.status }}">{{ p.status }}</span></td>
+      <td class="mono">{{ p.deadline.strftime('%d %b %Y') }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="card-foot"><a href="{{ url_for('company.projects') }}">See all projects</a></p>
+  {% else %}
+  <p class="empty">No projects yet. Post a brief and lecturers in that field can apply to supervise it.</p>
+  {% endif %}
+</section>
+{% endblock %}

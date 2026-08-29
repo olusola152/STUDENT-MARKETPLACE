@@ -1,0 +1,6 @@
+{% extends "shared/review.html" %}
+{% set back_url = url_for('company.inbox') %}
+{% set can_act = sub.stage == 'with_company' %}
+{% set forward_action = 'approve' %}
+{% set forward_label = 'Approve and issue certificate' %}
+{% set action_title = 'Your decision' %}

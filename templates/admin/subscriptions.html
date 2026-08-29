@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Subscriptions{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">Billing</p>
+  <h1 class="display">Subscriptions</h1>
+  <p class="lede">Activate an account once payment clears. Universities need this before lecturers can register; companies need it before posting.</p>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Universities</h2>
+  {% if universities %}
+  <table class="ledger">
+    <thead><tr><th>Institution</th><th>Contact</th><th>Lecturers</th><th>Students</th><th>Until</th><th>Status</th><th>Set</th></tr></thead>
+    <tbody>
+      {% for u in universities %}
+      <tr>
+        <td>{{ u.name }}</td>
+        <td class="mono">{{ u.admin_email or u.contact_email or '—' }}</td>
+        <td class="mono">{{ u.lecturers }}</td><td class="mono">{{ u.students }}</td>
+        <td class="mono">{{ u.subscribed_until.strftime('%d %b %Y') if u.subscribed_until else '—' }}</td>
+        <td><span class="status status--{{ u.subscription_status }}">{{ u.subscription_status }}</span></td>
+        <td>
+          <form method="post" action="{{ url_for('admin.set_subscription', kind='university', record_id=u.id) }}" class="inline-form">
+            <select name="status">
+              {% for s in ['active','pending','expired','suspended'] %}
+              <option value="{{ s }}" {% if u.subscription_status == s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+            <input type="number" name="months" min="1" max="36" placeholder="12" class="mini-input">
+            <button class="link-btn" type="submit">Apply</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="empty">No universities registered yet.</p>{% endif %}
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Companies</h2>
+  {% if companies %}
+  <table class="ledger">
+    <thead><tr><th>Company</th><th>Contact</th><th>Projects</th><th>Until</th><th>Status</th><th>Set</th></tr></thead>
+    <tbody>
+      {% for c in companies %}
+      <tr>
+        <td>{{ c.name }}</td><td class="mono">{{ c.admin_email }}</td>
+        <td class="mono">{{ c.projects }}</td>
+        <td class="mono">{{ c.subscribed_until.strftime('%d %b %Y') if c.subscribed_until else '—' }}</td>
+        <td><span class="status status--{{ c.subscription_status }}">{{ c.subscription_status }}</span></td>
+        <td>
+          <form method="post" action="{{ url_for('admin.set_subscription', kind='company', record_id=c.id) }}" class="inline-form">
+            <select name="status">
+              {% for s in ['active','pending','expired','suspended'] %}
+              <option value="{{ s }}" {% if c.subscription_status == s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+            <input type="number" name="months" min="1" max="36" placeholder="12" class="mini-input">
+            <button class="link-btn" type="submit">Apply</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="empty">No companies registered yet.</p>{% endif %}
+</section>
+{% endblock %}

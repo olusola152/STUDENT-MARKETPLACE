@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Your profile{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">Lecturer · {{ prof.university_name }}</p>
+  <h1 class="display">{{ g.user.fullname }}</h1>
+  <p class="lede">{{ g.user.email }}</p>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Your details</h2>
+  <form method="post" novalidate>
+    <div class="field-row">
+      <label class="field">
+        <span>Department</span>
+        <input type="text" name="department" value="{{ prof.department or '' }}">
+      </label>
+      <label class="field">
+        <span>Staff number</span>
+        <input type="text" name="staff_no" value="{{ prof.staff_no or '' }}">
+      </label>
+    </div>
+    <label class="field field--narrow">
+      <span>Phone</span>
+      <input type="tel" name="phone" value="{{ prof.phone or '' }}">
+    </label>
+
+    <fieldset class="fieldset">
+      <legend>Areas of expertise</legend>
+      <p class="lede" style="margin-bottom:.7rem">Briefs in these fields appear first when you browse.</p>
+      <div class="skill-grid">
+        {% for f in all_fields %}
+        <label class="skill">
+          <input type="checkbox" name="fields" value="{{ f.id }}" {% if f.id in mine %}checked{% endif %}>
+          <span>{{ f.name }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <button class="btn" type="submit">Save profile</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Students you supervise</h2>
+  {% if supervised %}
+  <table class="ledger">
+    <thead><tr><th>Student</th><th>Project</th><th>Company</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for s in supervised %}
+      <tr><td>{{ s.student_name }}</td><td>{{ s.title }}</td><td>{{ s.company_name }}</td>
+      <td><span class="status status--{{ s.status }}">{{ s.status }}</span></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">You haven't assigned anyone to a project yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Companies — Admin{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="record-label">Platform</p>
+  <h1 class="display">Companies</h1>
+  <p class="lede">Every company on the platform, whatever its subscription state.</p>
+</section>
+
+{% if companies %}
+<table class="ledger">
+  <thead><tr>
+    <th>Company</th><th>Account holder</th><th>Projects</th><th>Open</th>
+    <th>Placements</th><th>Until</th><th>Subscription</th><th></th>
+  </tr></thead>
+  <tbody>
+    {% for c in companies %}
+    <tr>
+      <td>
+        <strong>{{ c.name }}</strong>
+        {% if c.website %}<br><span class="mono">{{ c.website }}</span>{% endif %}
+      </td>
+      <td>
+        {{ c.admin_name }}<br><span class="mono">{{ c.admin_email }}</span>
+        {% if c.admin_status == 'blocked' %}<br><span class="status status--blocked">blocked</span>{% endif %}
+      </td>
+      <td class="mono">{{ c.projects }}</td>
+      <td class="mono">{{ c.open_projects }}</td>
+      <td class="mono">{{ c.placements }}</td>
+      <td class="mono">{{ c.subscribed_until.strftime('%d %b %Y') if c.subscribed_until else '—' }}</td>
+      <td><span class="status status--{{ c.subscription_status }}">{{ c.subscription_status }}</span></td>
+      <td>
+        <form method="post" action="{{ url_for('admin.set_subscription', kind='company', record_id=c.id) }}" class="inline-form">
+          <select name="status">
+            {% for s in ['active','pending','expired','suspended'] %}
+            <option value="{{ s }}" {% if c.subscription_status == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+          <input type="number" name="months" min="1" max="36" placeholder="12" class="mini-input">
+          <button class="link-btn" type="submit">Apply</button>
+        </form>
+        {% if c.admin_status == 'active' %}
+        <form method="post" action="{{ url_for('admin.block_user', user_id=c.admin_id) }}" class="inline-form">
+          <button class="link-btn" type="submit">Block account</button>
+        </form>
+        {% else %}
+        <form method="post" action="{{ url_for('admin.unblock_user', user_id=c.admin_id) }}">
+          <button class="link-btn" type="submit">Unblock</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">No companies have registered yet.</p>
+{% endif %}
+{% endblock %}

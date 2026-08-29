@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{{ code }} — StudentProjectHub{% endblock %}
+{% block content %}
+<section class="panel panel--center">
+  <p class="record-label">Error {{ code }}</p>
+  <h1 class="display">{{ message }}</h1>
+  <a class="btn" href="{{ url_for('home') }}">Back to your dashboard</a>
+</section>
+{% endblock %}

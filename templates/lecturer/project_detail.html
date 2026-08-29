@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}{{ project.title }}{% endblock %}
+{% block content %}
+<p class="backlink"><a href="{{ url_for('lecturer.browse') }}">Back to projects</a></p>
+<section class="page-head">
+  <p class="record-label">{{ project.field_name }} · {{ project.company_name }}</p>
+  <h1 class="display">{{ project.title }}</h1>
+</section>
+
+<section class="stat-grid">
+  <article class="stat"><p class="stat-num">{{ (project.deadline - today).days }}</p><p class="stat-label">Days left</p></article>
+  <article class="stat"><p class="stat-num">{{ project.max_students - project.taken }}</p><p class="stat-label">Places left</p></article>
+  <article class="stat"><p class="stat-num">{{ project.difficulty|capitalize }}</p><p class="stat-label">Difficulty</p></article>
+  <article class="stat"><p class="stat-num">{{ placed|length }}</p><p class="stat-label">Your students</p></article>
+</section>
+
+<section class="panel">
+  <h2 class="panel-title">Brief</h2>
+  <p class="prose">{{ project.description }}</p>
+  {% if project.deliverables %}<p class="prose">{{ project.deliverables }}</p>{% endif %}
+  {% if project.skill_list %}<p class="project-skills">Skills: {{ project.skill_list }}</p>{% endif %}
+</section>
+
+{% if placed %}
+<section class="panel">
+  <h2 class="panel-title">Students you have assigned</h2>
+  <table class="ledger">
+    <thead><tr><th>Student</th><th>Status</th><th>Progress</th><th></th></tr></thead>
+    <tbody>
+      {% for p in placed %}
+      <tr>
+        <td>{{ p.fullname }}</td>
+        <td><span class="status status--{{ p.status }}">{{ p.status }}</span></td>
+        <td class="mono">{{ p.done }}/{{ p.total }} phases</td>
+        <td><a href="{{ url_for('lecturer.monitor', assignment_id=p.id) }}">Monitor</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+{% if not my_request %}
+<section class="panel">
+  <h2 class="panel-title">Ask for this project</h2>
+  <p class="lede">{{ project.company_name }} decides before you can place any students on it.</p>
+  <form method="post" action="{{ url_for('lecturer.request_project', project_id=project.id) }}" novalidate>
+    <label class="field">
+      <span>How will your students approach it?</span>
+      <textarea name="message" rows="5" required minlength="40"
+        placeholder="The course this fits, how you'll supervise, what your students have built before."></textarea>
+    </label>
+    <label class="field field--narrow">
+      <span>Places needed (max {{ project.max_students }})</span>
+      <input type="number" name="places" min="1" max="{{ project.max_students }}" value="1" required>
+    </label>
+    <button class="btn" type="submit">Send request</button>
+  </form>
+</section>
+
+{% elif my_request.status == 'pending' %}
+<section class="panel">
+  <h2 class="panel-title">Waiting on {{ project.company_name }}</h2>
+  <p class="empty">You asked for {{ my_request.places }} place(s) on
+    {{ my_request.created_at.strftime('%d %b %Y') }}. You can assign students once the
+    company approves.</p>
+</section>
+
+{% elif my_request.status == 'declined' %}
+<section class="panel">
+  <h2 class="panel-title">Request declined</h2>
+  <p class="empty">{{ project.company_name }} declined this request. Your alerts carry the reason, if they gave one.</p>
+</section>
+
+{% else %}
+<section class="panel panel--highlight">
+  <h2 class="panel-title">Assign your students</h2>
+  <p class="lede">{{ project.company_name }} approved you for {{ my_request.places }} place(s).</p>
+
+  {% if project.taken >= project.max_students %}
+  <p class="empty">Every place on this project is taken.</p>
+  {% elif students %}
+  <form method="post" action="{{ url_for('lecturer.assign', project_id=project.id) }}">
+    <table class="ledger">
+      <thead><tr><th></th><th>Student</th><th>Course</th><th>Level</th><th>Active work</th><th>GitHub</th></tr></thead>
+      <tbody>
+        {% for s in students %}
+        <tr>
+          <td>{% if not s.on_project %}<input type="checkbox" name="students" value="{{ s.id }}">{% else %}<span class="mono">on</span>{% endif %}</td>
+          <td>{{ s.fullname }}{% if not s.available %} <span class="status">unavailable</span>{% endif %}</td>
+          <td>{{ s.course or '—' }}</td>
+          <td class="mono">{{ s.level or '—' }}</td>
+          <td class="mono">{{ s.active_jobs }}</td>
+          <td class="mono">{{ s.github_url or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="form-actions">
+      <button class="btn" type="submit">Assign selected students</button>
+    </div>
+  </form>
+  {% else %}
+  <p class="empty">No students from your institution have registered yet.</p>
+  {% endif %}
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Your applications — StudentProjectHub{% endblock %}
+
+{% block content %}
+<section class="page-head page-head--split">
+  <div>
+    <p class="record-label">Your record</p>
+    <h1 class="display">Applications</h1>
+  </div>
+  <a class="btn" href="{{ url_for('student.browse') }}">Find work</a>
+</section>
+
+{% if applications %}
+<div class="project-list">
+  {% for a in applications %}
+  <article class="project">
+    <div class="project-head">
+      <h2 class="project-title">{{ a.title }}</h2>
+      <span class="status status--{{ a.status }}">{{ a.status }}</span>
+    </div>
+    <p class="project-client">{{ a.client_name }}</p>
+    <dl class="project-meta">
+      <div><dt>Applied</dt><dd>{{ a.applied_at.strftime('%d %b %Y') }}</dd></div>
+      <div><dt>Deadline</dt><dd>{{ a.deadline.strftime('%d %b %Y') }}</dd></div>
+    </dl>
+    <p class="project-skills">{{ a.cover_letter[:180] }}{% if a.cover_letter|length > 180 %}…{% endif %}</p>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">You haven't applied for anything yet. Browse the open briefs to get started.</p>
+{% endif %}
+{% endblock %}

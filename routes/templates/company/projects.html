@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Your projects{% endblock %}
+{% block content %}
+<section class="page-head page-head--split">
+  <div><p class="record-label">Your briefs</p><h1 class="display">Projects</h1></div>
+  <a class="btn" href="{{ url_for('company.create_project') }}">Post a project</a>
+</section>
+
+{% if projects %}
+<div class="project-list">
+  {% for p in projects %}
+  <article class="project">
+    <div class="project-head">
+      <h2 class="project-title">{{ p.title }}</h2>
+      <span class="status status--{{ p.status }}">{{ p.status }}</span>
+    </div>
+    <p class="project-client">{{ p.field_name }}</p>
+    <dl class="project-meta">
+      <div><dt>Deadline</dt><dd>{{ p.deadline.strftime('%d %b %Y') }}{% if p.deadline < today %} · passed{% endif %}</dd></div>
+      <div><dt>Places</dt><dd>{{ p.max_students }}</dd></div>
+      <div><dt>Requests</dt><dd>{{ p.pending_requests }} pending</dd></div>
+      <div><dt>Students on it</dt><dd>{{ p.students_on }}</dd></div>
+      <div><dt>Requests</dt><dd>{{ p.pending_requests }} pending</dd></div>
+    </dl>
+    <div class="project-actions">
+      {% if p.pending_requests %}
+      <a class="btn btn--small" href="{{ url_for('company.requests', project_id=p.id) }}">Approve ({{ p.pending_requests }})</a>
+      {% endif %}
+      {% if p.status in ('open','engaged') %}
+      <a class="btn btn--small" href="{{ url_for('company.requests', project_id=p.id) }}">Requests ({{ p.pending_requests }})</a>
+      {% endif %}
+      {% if p.students_on %}
+      <a class="btn btn--small btn--quiet" href="{{ url_for('company.progress', project_id=p.id) }}">Progress</a>
+      {% endif %}
+      {% if p.status == 'draft' %}
+      <form method="post" action="{{ url_for('company.publish_project', project_id=p.id) }}">
+        <button class="btn btn--small" type="submit">Publish</button>
+      </form>
+      {% endif %}
+      {% if p.status in ('draft','open') %}
+      <form method="post" action="{{ url_for('company.close_project', project_id=p.id) }}">
+        <button class="btn btn--small btn--quiet" type="submit">Close</button>
+      </form>
+      {% endif %}
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">No projects yet.</p>
+{% endif %}
+{% endblock %}
